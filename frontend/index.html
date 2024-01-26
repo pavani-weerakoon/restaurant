@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colombo Restaurant Order System</title>
+    <link rel="stylesheet" href="index.css">
+   
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Function to load menu items
+            function loadMenuItems(type) {
+                $.ajax({
+                    url: `http://localhost:3000/menu/${type}`,
+                    type: 'GET',
+                    success: function(dishes) {
+                        const categoryDiv = $(`#${type}-dishes`);
+                        // Add data-type header to the checkbox group
+                        categoryDiv.append(`<h3 data-type="${type}">${type.charAt(0).toUpperCase() + type.slice(1)} Dishes</h3>`);
+                        dishes.forEach(dish => {
+                            categoryDiv.append(`
+                            <div class="menu-item">
+                                <input type="checkbox" class="dish-checkbox" data-name="${dish.name}" data-id="${dish.id}" data-type="${dish.type}" data-price="${dish.price}">
+                                <span>${dish.name}</span>
+                                <span>$${dish.price}</span>
+                              
+                            </div>
+                            `);
+                        });
+                        
+                    },
+                    error: function(request, status, error) {
+                        console.log('Error fetching ' + type + ' dishes:', status, error);
+                    }
+                });
+            }
+
+            // Load all menu categories
+            loadMenuItems('main');
+            loadMenuItems('side');
+            loadMenuItems('dessert');
+
+            // More functionality can be added here for order creation and viewing reports
+        });
+
+         // Redirect to the report page
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("view-reports").addEventListener("click", function() {
+              window.location.href = "report.html";
+            });
+          });
+
+        // Redirect to the next page
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("view-order").addEventListener("click", function() {
+             window.location.href = "order.html";
+            });
+          });
+
+         // Gather selected dishes
+        document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("create-order").addEventListener("click", function() {
+            const selectedDishes = {
+                    mainDish: "",
+                    sideDishes: [],
+                    dessert: ""
+            };
+                
+            $('.dish-checkbox:checked').each(function() {
+                const dishType = $(this).data('type');
+                const dishName = $(this).data('name');
+                
+                // Set the dishName based on dishType
+                    if (dishType === 'main') {
+                        selectedDishes.mainDish = dishName;
+                    } else if (dishType === 'dessert') {
+                        selectedDishes.dessert = dishName;
+                    } else if (dishType === 'side') {
+                        selectedDishes.sideDishes.push(dishName);
+                    }
+                });
+                
+        
+            const alertMessage = `Selected dishes:
+            Main Dish: ${selectedDishes.mainDish}
+            Side Dishes: ${selectedDishes.sideDishes.join(', ')}
+            Dessert: ${selectedDishes.dessert}`;
+
+            alert(alertMessage);
+        
+                // Send data to the backend
+                $.ajax({
+                    url: 'http://localhost:3000/order',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ selectedDishes }),
+                    success: function(response) {
+                        // Handle success response from the backend
+                        alert('Order created successfully!');
+                    },
+                    error: function(request, status, error) {
+                        // Handle error response from the backend
+                        console.error('Error creating order:', status, error);
+                    }
+                });
+            });
+        });
+        
+
+            
+          
+          
+    </script>
+
+</head>
+<body>
+    <header>
+        <h1>Colombo Restaurant Order System</h1>
+    </header>
+
+    <div class="container">
+        <!-- This is where the menu will be dynamically loaded -->    <!-- Body content -->
+    <div class="menu">
+        <div class="menu-category" id="main-dishes">
+           
+            <!-- Main dishes will be loaded here -->
+        </div>
+        <div class="menu-category" id="side-dishes">
+         
+            <!-- Side dishes will be loaded here -->
+        </div>
+        <div class="menu-category" id="dessert-dishes">
+            
+            <!-- Desserts will be loaded here -->
+        </div>
+    </div>
+
+        <!-- The buttons below are placeholders for functionality to be added with JavaScript -->
+        <div class="button-group">
+            <button id="create-order">Create Order</button>
+            <button id="view-order">View Order</button>
+            <button id="view-reports">View Reports</button>
+        </div>
+        
+    </div>
+
+    <footer>
+        <p>Colombo Restaurant - All rights reserved &copy; 2024</p>
+    </footer>
+
+    <!-- Scripts for handling menu loading and order creation will go here -->
+    <!-- You'll need to use JavaScript to interact with your backend API -->
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="report.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Function to fetch and display daily sales
+        function displayDailySales() {
+            $.ajax({
+                url: 'http://localhost:3000/reports/daily-sales',
+                type: 'GET',
+                success: function(data) {
+                    console.log(data);
+                    const container = $('#daily-sales');
+                    if (data && data.dailySales !== 0) {
+                        container.html(`
+                            <p>Daily Sales Revenue: $${data.dailySales}</p>
+                        `);
+                    } else {
+                        container.text('Error: Invalid data structure from the server.');
+                    }
+                },
+                error: function(request, status, error) {
+                    console.log('Error fetching daily sales:', status, error);
+                    $('#daily-sales').text('Error fetching daily sales. Please try again later.');
+                }
+            });
+        }
+    
+        // Function to fetch and display most famous  dish
+        function displayMostFamousDish(endpoint, containerId, dishType) {
+            $.ajax({
+                url: endpoint,
+                type: 'GET',
+                success: function(data) {
+                    const container = $(`#${containerId}`);
+    
+                    if (data && data.dish && data.orders !== undefined) {
+                        container.html(`
+                            <p>Most Famous ${dishType} Dish: ${data.dish}</p>
+                           
+                        `);
+                    } else {
+                        container.text(`Error: Invalid data structure for ${dishType} dish from the server.`);
+                    }
+                },
+                error: function(request, status, error) {
+                    console.log(`Error fetching most famous ${dishType} dish:`, status, error);
+                    $(`#${containerId}`).text(`Error fetching most famous ${dishType} dish. Please try again later.`);
+                }
+            });
+        }
+    
+        
+        // Function to fetch and display most common pair dishes
+        function displayCommonDishes() {
+            $.ajax({
+                url: 'http://localhost:3000/reports/most-common-pair',
+                type: 'GET',
+                success: function(data) {
+                    const container = $('#common-dishes');
+    
+                    if (data && data.mainDish && data.sideDish && data.orders !== undefined) {
+                        container.html(`
+                            <p>Most Common Pair Dishes</p>
+                            <div class ="common">
+                            <p>Main Dish:  ${data.mainDish}</p>
+                            <p>Side Dish: ${data.sideDish}</p>
+                            </div>
+                        `);
+                    } else {
+                        container.text('Error: Invalid data structure from the server.');
+                    }
+                },
+                error: function(request, status, error) {
+                    console.log('Error fetching most common pair dishes:', status, error);
+                    $('#common-dishes').text('Error fetching most common pair dishes. Please try again later.');
+                }
+            });
+        }
+    
+        // Call the functions to display each report item
+        displayDailySales();
+        displayMostFamousDish('http://localhost:3000/reports/famous-main-dish', 'famous-main-dishes', 'Main');  // Implement this function
+        displayMostFamousDish('http://localhost:3000/reports/famous-side-dish', 'famous-side-dishes', 'Side')
+        displayCommonDishes();  // Implement this function
+    });
+    
+</script>
+</head>
+<body>
+    
+
+<div class="container">
+   
+
+    <!-- This is where the menu will be dynamically loaded -->    <!-- Body content -->
+<div class="report">
+    <div class ="report-box">
+    <h1>Report</h1>
+    
+    <div class="reort-item" id="daily-sales ">
+        
+        <!-- Daily sales revenue will be loaded here -->
+    </div>
+    <div class="reort-item" id="famous-main-dishes">
+      
+        <!-- Most famous main dish will be loaded here -->
+    </div>
+    <div class="reort-item" id="famous-side-dishes">
+       
+        <!-- Most famous side dish will be loaded here -->
+    </div>
+    <div class="reort-item" id="common-dishes">
+        
+        <!-- Most common pair dishes will be loaded here -->
+    </div>
+</div>
+    
+</div>
+
+<footer>
+    <p>Colombo Restaurant - All rights reserved &copy; 2024</p>
+</footer>
+
+
+</body>
+
+</html>
+
+
+

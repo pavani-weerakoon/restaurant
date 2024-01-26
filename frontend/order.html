@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="order.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    $(document).ready(function () {
+        // Function to fetch and display all orders
+        function displayAllOrders() {
+            $.ajax({
+                url: 'http://localhost:3000/orders',
+                type: 'GET',
+                success: function (orders) {
+                    const ordersContainer = $('#orders-container');
+                    ordersContainer.empty(); // Clear existing orders
+    
+                    if (orders.length > 0) {
+                        orders.forEach(order => {
+                            ordersContainer.append(`
+                                <div class="order">
+                                    <p>Main Dish: ${order.mainDish.name}</p>
+                                    <p>Side Dishes: ${order.sideDishes.map(dish => dish.name).join(', ')}</p>
+                                    <p>Dessert: ${order.dessert ? order.dessert.name : 'N/A'}</p>
+                                </div>
+                            `);
+                        });
+                        
+                    } else {
+                        ordersContainer.text('No orders found.');
+                    }
+                },
+                error: function (request, status, error) {
+                    console.log('Error fetching orders:', status, error);
+                    $('#orders-container').text('Error fetching orders. Please try again later.');
+                }
+            });
+        }
+    
+        // Call the function to display orders when the page loads
+        displayAllOrders();
+    });
+    </script>
+    <!-- Add your meta tags, title, and styles here -->
+</head>
+<body>
+    <header>
+        <h1>Orders</h1>
+    </header>
+
+    <div class="container">
+        <div class="orders" id="orders-container">
+            <!-- Orders will be loaded here dynamically -->
+        </div>
+    </div>
+
+    <footer>
+        <p>Colombo Restaurant - All rights reserved &copy; 2024</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="app.js"></script> <!-- Include your main JavaScript file -->
+</body>
+</html>
